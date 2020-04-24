@@ -341,6 +341,11 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
+(defn split-maps
+  [form]
+  (println form)
+  form)
+
 (defn reindent
   ([form]
    (indent (unindent form)))
@@ -373,6 +378,8 @@
        (cond-> (:indentation? opts true)
          (reindent (:indents opts default-indents)
                    (:alias-map opts {})))
+       (cond-> (:split-maps? opts false)
+         (split-maps))
        (cond-> (:remove-trailing-whitespace? opts true)
          remove-trailing-whitespace))))
 

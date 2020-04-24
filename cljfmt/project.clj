@@ -12,6 +12,7 @@
                  [rewrite-cljs "0.4.4"]]
   :plugins [[lein-cljsbuild "1.1.7"]]
   :hooks [leiningen.cljsbuild]
+  :main ^:skip-aot cljfmt.main
   :cljsbuild {:builds
               {"dev" {:source-paths ["src" "test"]
                       :compiler {:main cljfmt.test-runner
