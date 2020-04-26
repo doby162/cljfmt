@@ -165,6 +165,8 @@
                                                (unrelated-function 5 3)"))
 (defn test-case5 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})
                                                {another-key 5}"))
+(defn test-case6 [] (reformat-string test-opts
+                                     "{    :one two :three four}"))
 
 (def default-paths ["src" "test" "project.clj"])
 

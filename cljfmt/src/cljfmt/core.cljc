@@ -348,12 +348,19 @@
    edit-all
    z/map?
    (fn [zloc]
-     (let [split (zip/children zloc)]
-       ; how do I turn the children back into stacked children in a trench coat?
-       ; [split "wow"] replaces all maps with "wow"
+     (let [split
+           (loop [z (zip/children zloc) i 1 ac []]
+             (if (seq (rest z))
+               (recur
+                (rest z)
+                (inc i)
+                (if (= 0 (mod i 4))
+                  (conj ac (n/newlines 1))
+                  (conj ac (first z))))
+               (conj ac (first z))))]
        (->
         zloc
-        (zip/insert-left split)
+        (zip/insert-left (n/map-node split))
         (zip/remove))))))
 
 (defn reindent
