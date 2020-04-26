@@ -151,22 +151,10 @@
    :indents   cljfmt/default-indents
    :alias-map {}})
 
-(def test-opts (merge default-options {:split-maps? true}))
-
 (defn merge-default-options [options]
   (-> (merge default-options options)
       (assoc :indents (merge (:indents default-options)
                              (:indents options {})))))
-
-(defn test-case [] (reformat-string test-opts "(println {:one two :three four})"))
-(defn test-case2 [] (reformat-string test-opts "(println {:one two :three four :four five})"))
-(defn test-case3 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})"))
-(defn test-case4 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})
-                                               (unrelated-function 5 3)"))
-(defn test-case5 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})
-                                               {another-key 5}"))
-(defn test-case6 [] (reformat-string test-opts
-                                     "{    :one two :three four}"))
 
 (def default-paths ["src" "test" "project.clj"])
 
