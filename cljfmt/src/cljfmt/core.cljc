@@ -343,8 +343,18 @@
 
 (defn split-maps
   [form]
-  (println form)
-  form)
+  (transform
+   form
+   edit-all
+   z/map?
+   (fn [zloc]
+     (let [split (zip/children zloc)]
+       ; how do I turn the children back into stacked children in a trench coat?
+       ; [split "wow"] replaces all maps with "wow"
+       (->
+        zloc
+        (zip/insert-left split)
+        (zip/remove))))))
 
 (defn reindent
   ([form]

@@ -159,6 +159,12 @@
                              (:indents options {})))))
 
 (defn test-case [] (reformat-string test-opts "(println {:one two :three four})"))
+(defn test-case2 [] (reformat-string test-opts "(println {:one two :three four :four five})"))
+(defn test-case3 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})"))
+(defn test-case4 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})
+                                               (unrelated-function 5 3)"))
+(defn test-case5 [] (reformat-string test-opts "(println {:one (+ 5 5) :three four :four five})
+                                               {another-key 5}"))
 
 (def default-paths ["src" "test" "project.clj"])
 
