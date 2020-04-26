@@ -389,11 +389,11 @@
          remove-surrounding-whitespace)
        (cond-> (:insert-missing-whitespace? opts true)
          insert-missing-whitespace)
+       (cond-> (:split-maps? opts false)
+         (split-maps))
        (cond-> (:indentation? opts true)
          (reindent (:indents opts default-indents)
                    (:alias-map opts {})))
-       (cond-> (:split-maps? opts false)
-         (split-maps))
        (cond-> (:remove-trailing-whitespace? opts true)
          remove-trailing-whitespace))))
 

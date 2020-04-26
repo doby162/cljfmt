@@ -930,7 +930,7 @@
   (is (reformats-to?
        ["{:one two :three four}"]
        ["{:one two"
-       ":three four}"]
+       " :three four}"]
        {:split-maps? true})))
 
 (deftest test-parsing
