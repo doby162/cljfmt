@@ -341,6 +341,25 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
+(defn split-maps
+  "Puts each hashmap pair on it's own line"
+  [form]
+  (transform form edit-all z/map?
+             (fn [zloc]
+               (let [split
+                     (loop [z (zip/children zloc) i 1 accumulate []]
+                       (let [nodes (if (= 0 (mod i 4))
+                                     ; 4th elements are the whitespace between pairs
+                                     (conj accumulate (n/newlines 1))
+                                     (conj accumulate (first z)))]
+                         (if (seq (rest z))
+                           (recur (rest z) (inc i) nodes)
+                           nodes)))]
+                 (->
+                  zloc
+                  (zip/insert-left (n/map-node split))
+                  (zip/remove))))))
+
 (defn reindent
   ([form]
    (indent (unindent form)))
@@ -370,6 +389,8 @@
          remove-surrounding-whitespace)
        (cond-> (:insert-missing-whitespace? opts true)
          insert-missing-whitespace)
+       (cond-> (:split-maps? opts false)
+         (split-maps))
        (cond-> (:indentation? opts true)
          (reindent (:indents opts default-indents)
                    (:alias-map opts {})))

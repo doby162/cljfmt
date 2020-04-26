@@ -926,7 +926,12 @@
         " bar "
         " )"]
        {:remove-surrounding-whitespace? false
-        :remove-trailing-whitespace? false})))
+        :remove-trailing-whitespace? false}))
+  (is (reformats-to?
+       ["{:one two :three four}"]
+       ["{:one two"
+        " :three four}"]
+       {:split-maps? true})))
 
 (deftest test-parsing
   (is (reformats-to?
