@@ -347,11 +347,11 @@
   (transform form edit-all z/map?
              (fn [zloc]
                (let [split
-                     (loop [z (zip/children zloc) i 1 acculate []]
+                     (loop [z (zip/children zloc) i 1 accumulate []]
                        (let [nodes (if (= 0 (mod i 4))
                                      ; 4th elements are the whitespace between pairs
-                                     (conj acculate (n/newlines 1))
-                                     (conj acculate (first z)))]
+                                     (conj accumulate (n/newlines 1))
+                                     (conj accumulate (first z)))]
                          (if (seq (rest z))
                            (recur (rest z) (inc i) nodes)
                            nodes)))]
