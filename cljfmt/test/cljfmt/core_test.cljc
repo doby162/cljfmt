@@ -938,7 +938,21 @@
        ["{:one two"
         ";comment"
         " :three four}"]
-       {:split-keypairs-over-multiple-lines? true})))
+       {:split-keypairs-over-multiple-lines? true}))
+  (is (reformats-to?
+       ["{:one two #_comment"
+        ":three four}"]
+       ["{:one two"
+        " #_comment"
+        " :three four}"]
+       {:split-keypairs-over-multiple-lines? true}))
+  (is (reformats-to?
+        ["{:one two (comment five)"
+         ":three four}"]
+        ["{:one two"
+         " (comment five)"
+         " :three four}"]
+        {:split-keypairs-over-multiple-lines? true})))
 
 (deftest test-parsing
   (is (reformats-to?

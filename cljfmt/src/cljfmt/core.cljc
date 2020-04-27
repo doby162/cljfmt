@@ -346,12 +346,11 @@
   (transform form edit-all z/map?
              (fn [zloc]
                (let [split
-                     (loop [z (zip/children zloc) i 1 accumulate []]
-                       (if (n/comment? (first z))
+                     (loop [z (zip/children zloc) i 0 accumulate []]
+                       (if (n/whitespace-or-comment? (first z))
                          (recur (rest z) i (conj accumulate (first z)))
-                         (let [nodes (if (= 0 (mod i 4))
-                                     ; 4th elements are the whitespace between pairs
-                                       (conj accumulate (n/newlines 1))
+                         (let [nodes (if (= 0 (mod i 2))
+                                       (conj accumulate (n/newlines 1) (first z))
                                        (conj accumulate (first z)))]
                            (if (seq (rest z))
                              (recur (rest z) (inc i) nodes)
@@ -384,14 +383,14 @@
    (reformat-form form {}))
   ([form opts]
    (-> form
+       (cond-> (:split-keypairs-over-multiple-lines? opts false)
+         (split-maps))
        (cond-> (:remove-consecutive-blank-lines? opts true)
          remove-consecutive-blank-lines)
        (cond-> (:remove-surrounding-whitespace? opts true)
          remove-surrounding-whitespace)
        (cond-> (:insert-missing-whitespace? opts true)
          insert-missing-whitespace)
-       (cond-> (:split-keypairs-over-multiple-lines? opts false)
-         (split-maps))
        (cond-> (:indentation? opts true)
          (reindent (:indents opts default-indents)
                    (:alias-map opts {})))
