@@ -342,19 +342,20 @@
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
 (defn split-maps
-  "Puts each hashmap pair on it's own line"
   [form]
   (transform form edit-all z/map?
              (fn [zloc]
                (let [split
                      (loop [z (zip/children zloc) i 1 accumulate []]
-                       (let [nodes (if (= 0 (mod i 4))
+                       (if (n/comment? (first z))
+                         (recur (rest z) i (conj accumulate (first z)))
+                         (let [nodes (if (= 0 (mod i 4))
                                      ; 4th elements are the whitespace between pairs
-                                     (conj accumulate (n/newlines 1))
-                                     (conj accumulate (first z)))]
-                         (if (seq (rest z))
-                           (recur (rest z) (inc i) nodes)
-                           nodes)))]
+                                       (conj accumulate (n/newlines 1))
+                                       (conj accumulate (first z)))]
+                           (if (seq (rest z))
+                             (recur (rest z) (inc i) nodes)
+                             nodes))))]
                  (->
                   zloc
                   (zip/insert-left (n/map-node split))
