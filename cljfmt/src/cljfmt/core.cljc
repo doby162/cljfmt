@@ -389,7 +389,7 @@
          remove-surrounding-whitespace)
        (cond-> (:insert-missing-whitespace? opts true)
          insert-missing-whitespace)
-       (cond-> (:split-maps? opts false)
+       (cond-> (:split-keypairs-over-multiple-lines? opts false)
          (split-maps))
        (cond-> (:indentation? opts true)
          (reindent (:indents opts default-indents)

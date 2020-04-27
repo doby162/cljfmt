@@ -931,7 +931,7 @@
        ["{:one two :three four}"]
        ["{:one two"
         " :three four}"]
-       {:split-maps? true})))
+       {:split-keypairs-over-multiple-lines? true})))
 
 (deftest test-parsing
   (is (reformats-to?
