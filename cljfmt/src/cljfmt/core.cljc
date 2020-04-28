@@ -341,15 +341,37 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
+(defn strip-newlines-bak
+  [zloc]
+  (let [without-newlines
+        (loop [z (zip/children zloc) accumulate []]
+          (if (first z)
+            (if (n/linebreak? (first z))
+              (recur (rest z) accumulate)
+              (recur (rest z) (conj accumulate (first z))))
+            accumulate))]
+    (->
+     zloc
+     (zip/insert-left  (z/node without-newlines))
+     (zip/remove))))
+
+(defn strip-newlines
+  [zloc]
+  (->
+    zloc
+    (z/string)
+    (str/replace #"\n" "")
+    (z/of-string)))
+
 (defn split-maps
   [form]
   (transform form edit-all z/map?
              (fn [zloc]
-               (let [split
-                     (z/map-vals (fn [%] (z/insert-right % (n/newlines 1))) zloc)]
+               (let [without-newlines (strip-newlines zloc)
+                     split (z/map-vals (fn [%] (z/insert-right % (n/newlines 1))) without-newlines)]
                  (->
                   zloc
-                  (zip/insert-left (z/node split))
+                  (zip/insert-left  (z/node split))
                   (zip/remove))))))
 
 (defn reindent
