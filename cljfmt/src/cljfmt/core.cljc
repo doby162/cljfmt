@@ -354,7 +354,7 @@
 
 (defn remove-blank-lines
   [zloc]
-  (z/of-string (str/join "\n" (filter #(not (= (str/trim %) "")) (str/split-lines (z/->root-string zloc))))))
+  (z/of-string (str/join "\n" (filter #(not (= (str/trim %) "")) (str/split-lines (z/root-string zloc))))))
 
 (defn split-maps
   [form]
