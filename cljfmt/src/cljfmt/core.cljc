@@ -355,23 +355,25 @@
 (defn remove-zipper-blank-lines
   [zloc]
   (->> zloc
-  (z/root-string)
-  (str/split-lines)
-  (filter #(not (= (str/trim %) "")))
-  (str/join "\n")
-  (z/of-string)))
+       (z/root-string)
+       (str/split-lines)
+       (filter #(not (= (str/trim %) "")))
+       (str/join "\n")
+       (z/of-string)))
+
+(defn split-keypairs
+  [zloc]
+  (let [split (z/map-keys
+               (fn [%] (z/insert-left % (n/newlines 1)))
+               (strip-zipper-newlines zloc))]
+    (-> zloc
+        (zip/insert-left  (z/node split))
+        (zip/remove)
+        (remove-zipper-blank-lines))))
 
 (defn split-keypairs-over-multiple-lines
   [form]
-  (transform form edit-all z/map?
-             (fn [zloc]
-               (let [split (z/map-keys
-                            (fn [%] (z/insert-left % (n/newlines 1)))
-                            (strip-zipper-newlines zloc))]
-                 (-> zloc
-                     (zip/insert-left  (z/node split))
-                     (zip/remove)
-                     (remove-zipper-blank-lines))))))
+  (transform form edit-all z/map? split-keypairs))
 
 (defn reindent
   ([form]
