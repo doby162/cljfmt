@@ -341,21 +341,18 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
-(defn strip-newlines-bak
+(defn strip-newlines
   [zloc]
   (let [without-newlines
         (loop [z (zip/children zloc) accumulate []]
           (if (first z)
             (if (n/linebreak? (first z))
-              (recur (rest z) accumulate)
+              (recur (rest z) (conj accumulate (n/whitespace-node " ")))
               (recur (rest z) (conj accumulate (first z))))
             accumulate))]
-    (->
-     zloc
-     (zip/insert-left  (z/node without-newlines))
-     (zip/remove))))
+    (z/of-string (n/string (n/map-node without-newlines)))))
 
-(defn strip-newlines
+(defn strip-newlines-bak
   [zloc]
   (->
     zloc
@@ -367,8 +364,9 @@
   [form]
   (transform form edit-all z/map?
              (fn [zloc]
+               (println "===========================================")
                (let [without-newlines (strip-newlines zloc)
-                     split (z/map-vals (fn [%] (z/insert-right % (n/newlines 1))) without-newlines)]
+                     split (z/map-vals (fn [%] (println %) (z/insert-right % (n/newlines 1))) without-newlines)]
                  (->
                   zloc
                   (zip/insert-left  (z/node split))

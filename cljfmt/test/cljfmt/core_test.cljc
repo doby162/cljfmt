@@ -933,10 +933,32 @@
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
+       ["{:one two"
+        " :three four}"]
+       ["{:one two"
+        " :three four}"]
+       {:split-keypairs-over-multiple-lines? true}))
+  (is (reformats-to?
+       ["{:one two"
+        ";comment"
+        ":three four}"]
+       ["{:one two"
+        " ;comment"
+        " :three four}"]
+       {:split-keypairs-over-multiple-lines? true}))
+  (is (reformats-to?
        ["{:one two ;comment"
         ":three four}"]
        ["{:one two"
-        ";comment"
+        " ;comment"
+        " :three four}"]
+       {:split-keypairs-over-multiple-lines? true}))
+  (is (reformats-to?
+       ["{;comment"
+        ":one two"
+        ":three four}"]
+       ["{;comment"
+        " :one two"
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
@@ -947,12 +969,12 @@
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
-        ["{:one two (comment five)"
-         ":three four}"]
-        ["{:one two"
-         " (comment five)"
-         " :three four}"]
-        {:split-keypairs-over-multiple-lines? true})))
+       ["{:one two (comment five)" ;this isn't a valid map so the output shouldn't be valid
+        ":three four}"]
+       ["{:one two"
+        " (comment five) :three"
+        " four}"]
+       {:split-keypairs-over-multiple-lines? true})))
 
 (deftest test-parsing
   (is (reformats-to?
