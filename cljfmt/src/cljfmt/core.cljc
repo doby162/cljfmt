@@ -341,7 +341,7 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
-(defn strip-newlines
+(defn strip-zipper-newlines
   [zloc]
   (let [without-newlines
         (loop [z (zip/children zloc) accumulate []]
@@ -352,23 +352,26 @@
             accumulate))]
     (z/of-string (n/string (n/map-node without-newlines)))))
 
-(defn remove-blank-lines
+(defn remove-zipper-blank-lines
   [zloc]
-  (z/of-string (str/join "\n" (filter #(not (= (str/trim %) "")) (str/split-lines (z/root-string zloc))))))
+  (->> zloc
+  (z/root-string)
+  (str/split-lines)
+  (filter #(not (= (str/trim %) "")))
+  (str/join "\n")
+  (z/of-string)))
 
-(defn split-maps
+(defn split-keypairs-over-multiple-lines
   [form]
   (transform form edit-all z/map?
              (fn [zloc]
-               (let [without-newlines (strip-newlines zloc)
-                     split (z/map-keys
+               (let [split (z/map-keys
                             (fn [%] (z/insert-left % (n/newlines 1)))
-                            without-newlines)]
-                 (->
-                  zloc
-                  (zip/insert-left  (z/node split))
-                  (zip/remove)
-                  (remove-blank-lines))))))
+                            (strip-zipper-newlines zloc))]
+                 (-> zloc
+                     (zip/insert-left  (z/node split))
+                     (zip/remove)
+                     (remove-zipper-blank-lines))))))
 
 (defn reindent
   ([form]
@@ -394,7 +397,7 @@
   ([form opts]
    (-> form
        (cond-> (:split-keypairs-over-multiple-lines? opts false)
-         (split-maps))
+         (split-keypairs-over-multiple-lines))
        (cond-> (:remove-consecutive-blank-lines? opts true)
          remove-consecutive-blank-lines)
        (cond-> (:remove-surrounding-whitespace? opts true)
