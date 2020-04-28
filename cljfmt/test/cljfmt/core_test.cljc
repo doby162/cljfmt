@@ -942,15 +942,13 @@
        ["{:one two"
         ";comment"
         ":three four}"]
-       ["{:one two"
-        " ;comment"
+       ["{:one two ;comment"
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
        ["{:one two ;comment"
         ":three four}"]
-       ["{:one two"
-        " ;comment"
+       ["{:one two ;comment"
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
@@ -962,14 +960,18 @@
         " :three four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
+        ;this behavior is "wrong", but since our parser treats #_comments
+        ;as values, the best way to resolve this is to make a PR against
+        ;rewrite-clj
        ["{:one two #_comment"
         ":three four}"]
        ["{:one two"
-        " #_comment"
-        " :three four}"]
+        " #_comment :three"
+        " four}"]
        {:split-keypairs-over-multiple-lines? true}))
   (is (reformats-to?
-       ["{:one two (comment five)" ;this isn't a valid map so the output shouldn't be valid
+       ;this isn't a valid map so the output shouldn't be valid
+       ["{:one two (comment five)"
         ":three four}"]
        ["{:one two"
         " (comment five) :three"

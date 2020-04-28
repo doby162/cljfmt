@@ -352,25 +352,23 @@
             accumulate))]
     (z/of-string (n/string (n/map-node without-newlines)))))
 
-(defn strip-newlines-bak
+(defn remove-blank-lines
   [zloc]
-  (->
-    zloc
-    (z/string)
-    (str/replace #"\n" "")
-    (z/of-string)))
+  (z/of-string (str/join "\n" (filter #(not (= (str/trim %) "")) (str/split-lines (z/->root-string zloc))))))
 
 (defn split-maps
   [form]
   (transform form edit-all z/map?
              (fn [zloc]
-               (println "===========================================")
                (let [without-newlines (strip-newlines zloc)
-                     split (z/map-vals (fn [%] (println %) (z/insert-right % (n/newlines 1))) without-newlines)]
+                     split (z/map-keys
+                            (fn [%] (z/insert-left % (n/newlines 1)))
+                            without-newlines)]
                  (->
                   zloc
                   (zip/insert-left  (z/node split))
-                  (zip/remove))))))
+                  (zip/remove)
+                  (remove-blank-lines))))))
 
 (defn reindent
   ([form]
