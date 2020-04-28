@@ -346,18 +346,10 @@
   (transform form edit-all z/map?
              (fn [zloc]
                (let [split
-                     (loop [z (zip/children zloc) i 0 accumulate []]
-                       (if (n/whitespace-or-comment? (first z))
-                         (recur (rest z) i (conj accumulate (first z)))
-                         (let [nodes (if (= 0 (mod i 2))
-                                       (conj accumulate (n/newlines 1) (first z))
-                                       (conj accumulate (first z)))]
-                           (if (seq (rest z))
-                             (recur (rest z) (inc i) nodes)
-                             nodes))))]
+                     (z/map-vals (fn [%] (z/insert-right % (n/newlines 1))) zloc)]
                  (->
                   zloc
-                  (zip/insert-left (n/map-node split))
+                  (zip/insert-left (z/node split))
                   (zip/remove))))))
 
 (defn reindent
