@@ -348,10 +348,20 @@
        (str/split-lines)
        (count)))
 
-(defn- count-map-keys [zloc]
-  (let [count (atom 0)]
-    (z/map-keys (fn [z] (swap! count inc) z) zloc)
-    @count))
+#?(:clj
+   (defn- count-map-keys
+     [zloc]
+     (let [count (agent 0)]
+       (z/map-keys (fn [z] (send count inc) z) zloc)
+       (await count)
+       @count)))
+#?(:cljs
+   (defn- count-map-keys
+     [zloc]
+     ;an atom is safe in a single threaded environment
+     (let [count (atom 0)]
+       (z/map-keys (fn [z] (swap! count inc) z) zloc)
+       @count)))
 
 (defn- multiple-keys-per-line? [zloc]
   (and
