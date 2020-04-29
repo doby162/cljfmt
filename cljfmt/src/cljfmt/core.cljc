@@ -341,6 +341,21 @@
   ([form indents alias-map]
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
+(defn- count-map-lines [zloc]
+  (count (str/split-lines (z/string
+                           (z/map-vals #(z/replace % (n/whitespace-node " ")) zloc)))))
+
+(defn- count-map-keys [zloc]
+  (let [count (atom 0)]
+    (z/map-keys (fn [z] (swap! count inc) z) zloc)
+    @count))
+
+(defn- multiple-keys-per-line? [zloc]
+  (and
+   (z/map? zloc)
+   (> (count-map-keys zloc) 0)
+   (not (= (count-map-keys zloc) (count-map-lines zloc)))))
+
 (defn strip-zipper-newlines
   [zloc]
   (let [without-newlines
@@ -364,7 +379,10 @@
 (defn split-keypairs
   [zloc]
   (let [split (z/map-keys
-               (fn [%] (z/insert-left % (n/newlines 1)))
+               (fn [%]
+                 (if (z/left %)
+                   (z/insert-left % (n/newlines 1))
+                   %))
                (strip-zipper-newlines zloc))]
     (-> zloc
         (zip/insert-left  (z/node split))
@@ -373,7 +391,7 @@
 
 (defn split-keypairs-over-multiple-lines
   [form]
-  (transform form edit-all z/map? split-keypairs))
+  (transform form edit-all multiple-keys-per-line? split-keypairs))
 
 (defn reindent
   ([form]
