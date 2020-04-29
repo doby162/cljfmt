@@ -342,8 +342,11 @@
    (transform form edit-all should-indent? #(indent-line % indents alias-map))))
 
 (defn- count-map-lines [zloc]
-  (count (str/split-lines (z/string
-                           (z/map-vals #(z/replace % (n/whitespace-node " ")) zloc)))))
+  (->> zloc
+       (z/map-vals #(z/replace % (n/whitespace-node " ")))
+       (z/string)
+       (str/split-lines)
+       (count)))
 
 (defn- count-map-keys [zloc]
   (let [count (atom 0)]
@@ -356,7 +359,7 @@
    (> (count-map-keys zloc) 0)
    (not (= (count-map-keys zloc) (count-map-lines zloc)))))
 
-(defn strip-zipper-newlines
+(defn- strip-zipper-newlines
   [zloc]
   (let [without-newlines
         (loop [z (zip/children zloc) accumulate []]
@@ -367,7 +370,7 @@
             accumulate))]
     (z/of-string (n/string (n/map-node without-newlines)))))
 
-(defn remove-zipper-blank-lines
+(defn- remove-zipper-blank-lines
   [zloc]
   (->> zloc
        (z/root-string)
