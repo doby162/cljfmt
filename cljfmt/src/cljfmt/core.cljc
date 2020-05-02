@@ -391,16 +391,16 @@
 
 (defn split-keypairs
   [zloc]
-  (let [split (z/map-keys
-               (fn [%]
-                 (if (z/left %)
-                   (z/insert-left % (n/newlines 1))
-                   %))
-               (strip-zipper-newlines zloc))]
+  (let [split (remove-zipper-blank-lines
+               (z/map-keys
+                (fn [%]
+                  (if (z/left %)
+                    (z/insert-left % (n/newlines 1))
+                    %))
+                (strip-zipper-newlines zloc)))]
     (-> zloc
         (zip/insert-left  (z/node split))
-        (zip/remove)
-        (remove-zipper-blank-lines))))
+        (zip/remove))))
 
 (defn split-keypairs-over-multiple-lines
   [form]
